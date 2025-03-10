@@ -11,10 +11,12 @@ class Game:
         self.root = root
         self.root.title("Multiplication Game")
         
+        # TODO: 3. jāizveido datu struktūra spēles stāvokļu glabāšanai (tiešam vājāg?)
         self.number = tk.IntVar(value=8)
         self.player_score = 0
         self.computer_score = 0
         self.bank = 0
+        # TODO: izvēlēties, kurš uzsāk spēli: cilvēks vai dators
         self.current_turn = "player"
         
         self.label = tk.Label(root, text="Choose a starting number (8-18):")
@@ -29,11 +31,13 @@ class Game:
         self.info_label = tk.Label(root, text="")
         self.info_label.pack()
         
+        button_frame = tk.Frame(root)
+        button_frame.pack()
         self.move_buttons = []
         for mult in [2, 3, 4]:
-            button = tk.Button(root, text=f"Multiply by {mult}", command=lambda m=mult: self.player_move(m))
+            button = tk.Button(button_frame, text=f"Multiply by {mult}", command=lambda m=mult: self.player_move(m))
             self.move_buttons.append(button)
-            button.pack()
+            button.pack(side="left", padx=3, pady=2)
         
         self.restart_button = tk.Button(root, text="Restart", command=self.restart_game)
         self.restart_button.pack()
@@ -62,6 +66,7 @@ class Game:
     
     def computer_move(self):
         if self.current_turn == "computer":
+            # TODO: jāfiksē datora vidējo laiku gājiena izpildei
             best_move = self.ai.choose_move({
                 "number": self.number.get(),
                 "player_score": self.computer_score,
@@ -183,6 +188,7 @@ class Game:
         return pos
     
     def end_game(self):
+        # TODO: jāfiksē datora un cilvēka uzvaru skaitu
         if self.player_score > self.computer_score:
             winner = "Player wins!"
         elif self.computer_score > self.player_score:
