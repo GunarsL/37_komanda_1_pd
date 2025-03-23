@@ -5,13 +5,25 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from ai import AI
 from minimax import simulate_move
+from alphabeta import simulate_move
 
 class Game:
     def __init__(self, root):
         self.root = root
         self.root.title("Multiplication Game")
         
-        # TODO: 3. jāizveido datu struktūra spēles stāvokļu glabāšanai (tiešam vājāg?)
+        # Algoritma izvēles sākotnējā iestatīšana (var izvēlēties starp Minimax un Alfa-beta)
+        self.algorithm_choice = tk.StringVar(value="minimax")
+        
+        self.algorithm_label = tk.Label(root, text="Choose Algorithm (Minimax or AlphaBeta):")
+        self.algorithm_label.pack()
+        
+        self.minimax_button = tk.Radiobutton(root, text="Minimax", variable=self.algorithm_choice, value="minimax")
+        self.minimax_button.pack()
+        
+        self.alphabeta_button = tk.Radiobutton(root, text="AlphaBeta", variable=self.algorithm_choice, value="alphabeta")
+        self.alphabeta_button.pack()
+
         self.number = tk.IntVar(value=8)
         self.player_score = 0
         self.computer_score = 0
@@ -43,12 +55,12 @@ class Game:
         self.restart_button.pack()
         
         self.tree_window = None
-        self.ai = AI()
+        self.ai = AI(self.algorithm_choice.get())
         self.update_ui()
-        
+
     def start_game(self):
         try:
-            num = int(self.number.get())
+            num = int(self.entry.get())
             if num < 8 or num > 18:
                 raise ValueError
             self.number.set(num)
@@ -67,6 +79,7 @@ class Game:
     def computer_move(self):
         if self.current_turn == "computer":
             # TODO: jāfiksē datora vidējo laiku gājiena izpildei
+            # Dators izvēlas gājienu atbilstoši algoritmam
             best_move = self.ai.choose_move({
                 "number": self.number.get(),
                 "player_score": self.computer_score,
@@ -158,35 +171,6 @@ class Game:
         canvas.draw()
         canvas.get_tk_widget().pack()
 
-    
-    def calculate_positions(self, G):
-        pos = {}
-        levels = {}
-        
-        def assign_levels(node, level):
-            levels[node] = level
-            for neighbor in G.neighbors(node):
-                if neighbor not in levels:  
-                    assign_levels(neighbor, level + 1)
-        
-        root = self.number.get()
-        assign_levels(root, 0)
-        
-        level_positions = {} 
-        for node, level in levels.items():
-            if level not in level_positions:
-                level_positions[level] = []
-            level_positions[level].append(node)
-            
-        pos = {}
-        for level, nodes in level_positions.items():
-            x_positions = list(range(len(nodes))) 
-            y_position = -level 
-            for x, node in zip(x_positions, nodes):
-                pos[node] = (x, y_position)
-
-        return pos
-    
     def end_game(self):
         # TODO: jāfiksē datora un cilvēka uzvaru skaitu
         if self.player_score > self.computer_score:
