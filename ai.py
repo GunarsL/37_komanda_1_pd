@@ -5,7 +5,6 @@ from alphabeta import alphabeta  # Importējiet Alfa-beta algoritmu
 class AI:
     def __init__(self, algorithm="minimax"):
         self.algorithm = algorithm  # Algoritms, kuru izmantos dators ("minimax" vai "alphabeta")
-    # TODO: izvēlēties, kuru algoritmu izmantos dators: Minimaksa algoritmu vai Alfa-beta algoritmu
     # TODO: jāfiksē datora apmeklēto virsotņu skaitu
     def choose_move(self, state):
         # Izvēlas algoritmu atkarībā no iestatījuma

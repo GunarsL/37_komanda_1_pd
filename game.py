@@ -13,16 +13,20 @@ class Game:
         self.root.title("Multiplication Game")
         
         # Algoritma izvēles sākotnējā iestatīšana (var izvēlēties starp Minimax un Alfa-beta)
+        algorithm_frame = tk.Frame(root)
         self.algorithm_choice = tk.StringVar(value="minimax")
         
         self.algorithm_label = tk.Label(root, text="Choose Algorithm (Minimax or AlphaBeta):")
         self.algorithm_label.pack()
         
-        self.minimax_button = tk.Radiobutton(root, text="Minimax", variable=self.algorithm_choice, value="minimax")
-        self.minimax_button.pack()
+        self.minimax_button = tk.Radiobutton(algorithm_frame, text="Minimax", variable=self.algorithm_choice, value="minimax")
+        self.minimax_button.pack(side="left")
         
-        self.alphabeta_button = tk.Radiobutton(root, text="AlphaBeta", variable=self.algorithm_choice, value="alphabeta")
-        self.alphabeta_button.pack()
+        
+        self.alphabeta_button = tk.Radiobutton(algorithm_frame, text="AlphaBeta", variable=self.algorithm_choice, value="alphabeta")
+        self.alphabeta_button.pack(side="left")
+        
+        algorithm_frame.pack()
 
         self.number = tk.IntVar(value=8)
         self.player_score = 0
@@ -31,16 +35,19 @@ class Game:
         # TODO: izvēlēties, kurš uzsāk spēli: cilvēks vai dators
         self.current_turn = "player"
         
+        starting_player_frame = tk.Frame(root)
         self.starting_player = tk.StringVar(value="player")
 
         self.starting_label = tk.Label(root, text="Who starts the game?")
         self.starting_label.pack()
 
-        self.player_first_button = tk.Radiobutton(root, text="Player", variable=self.starting_player, value="player")
-        self.player_first_button.pack()
+        self.player_first_button = tk.Radiobutton(starting_player_frame, text="Player", variable=self.starting_player, value="player")
+        self.player_first_button.pack(side="left")
 
-        self.computer_first_button = tk.Radiobutton(root, text="Computer", variable=self.starting_player, value="computer")
-        self.computer_first_button.pack()
+        self.computer_first_button = tk.Radiobutton(starting_player_frame, text="Computer", variable=self.starting_player, value="computer")
+        self.computer_first_button.pack(side="left")
+
+        starting_player_frame.pack()
 
         
         self.label = tk.Label(root, text="Choose a starting number (8-18):")
