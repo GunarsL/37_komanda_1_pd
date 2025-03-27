@@ -31,6 +31,18 @@ class Game:
         # TODO: izvēlēties, kurš uzsāk spēli: cilvēks vai dators
         self.current_turn = "player"
         
+        self.starting_player = tk.StringVar(value="player")
+
+        self.starting_label = tk.Label(root, text="Who starts the game?")
+        self.starting_label.pack()
+
+        self.player_first_button = tk.Radiobutton(root, text="Player", variable=self.starting_player, value="player")
+        self.player_first_button.pack()
+
+        self.computer_first_button = tk.Radiobutton(root, text="Computer", variable=self.starting_player, value="computer")
+        self.computer_first_button.pack()
+
+        
         self.label = tk.Label(root, text="Choose a starting number (8-18):")
         self.label.pack()
         
@@ -64,7 +76,9 @@ class Game:
             if num < 8 or num > 18:
                 raise ValueError
             self.number.set(num)
-            self.current_turn = "player"
+            self.current_turn = self.starting_player.get()
+            if self.current_turn == "computer":
+                self.root.after(1000, self.computer_move)
             self.update_ui()
             self.open_tree_window()
         except ValueError:
@@ -136,23 +150,28 @@ class Game:
             if depth == 0 or number >= 1200:
                 return
 
-            if number not in levels: 
-                G.add_node(number, subset=level)
-                levels[number] = level
+            node_id = (number, level)
+            if node_id not in levels:
+                G.add_node(node_id, subset=level)
+                levels[node_id] = level
 
-            children = [number * 2, number * 3, number * 4]
+            children = [(number * 2, level + 1), (number * 3, level + 1), (number * 4, level + 1)]
 
-            for child in children:
+            for child, child_level in children:
                 if child < 1200:
-                    G.add_node(child, subset=level + 1)
-                    levels[child] = level + 1
-                    G.add_edge(number, child)
-                    build_tree(child, depth - 1, level + 1)
+                    child_id = (child, child_level)
+                    G.add_node(child_id, subset=child_level)
+                    levels[child_id] = child_level
+                    G.add_edge(node_id, child_id)
+                    build_tree(child, depth - 1, child_level)
 
         root_number = self.number.get()
-        G.add_node(root_number, subset=0)
-        levels[root_number] = 0
+        levels[(root_number, 0)] = 0
         build_tree(root_number, 3, 1)
+        
+        nodes_to_remove = [node for node in G.nodes if node[1] == 0]
+        G.remove_nodes_from(nodes_to_remove)
+
     
         for node in G.nodes():
             if "subset" not in G.nodes[node]:
