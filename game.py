@@ -4,89 +4,48 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from ai import AI
-from minimax import simulate_move
-from alphabeta import simulate_move
+from helper import TemplateHelper
 
 class Game:
     def __init__(self, root):
         self.root = root
         self.root.title("Multiplication Game")
-        
-        # Algoritma izvēles sākotnējā iestatīšana (var izvēlēties starp Minimax un Alfa-beta)
-        algorithm_frame = tk.Frame(root)
-        self.algorithm_choice = tk.StringVar(value="minimax")
-        
-        self.algorithm_label = tk.Label(root, text="Choose Algorithm (Minimax or AlphaBeta):")
-        self.algorithm_label.pack()
-        
-        self.minimax_button = tk.Radiobutton(algorithm_frame, text="Minimax", variable=self.algorithm_choice, value="minimax")
-        self.minimax_button.pack(side="left")
-        
-        
-        self.alphabeta_button = tk.Radiobutton(algorithm_frame, text="AlphaBeta", variable=self.algorithm_choice, value="alphabeta")
-        self.alphabeta_button.pack(side="left")
-        
-        algorithm_frame.pack()
+        self.tree_window = None
 
-        self.number = tk.IntVar(value=8)
-        self.player_score = 0
-        self.computer_score = 0
-        self.bank = 0
-        # TODO: izvēlēties, kurš uzsāk spēli: cilvēks vai dators
-        self.current_turn = "player"
+        self.number = tk.IntVar()
         
-        starting_player_frame = tk.Frame(root)
-        self.starting_player = tk.StringVar(value="player")
-
-        self.starting_label = tk.Label(root, text="Who starts the game?")
-        self.starting_label.pack()
-
-        self.player_first_button = tk.Radiobutton(starting_player_frame, text="Player", variable=self.starting_player, value="player")
-        self.player_first_button.pack(side="left")
-
-        self.computer_first_button = tk.Radiobutton(starting_player_frame, text="Computer", variable=self.starting_player, value="computer")
-        self.computer_first_button.pack(side="left")
-
-        starting_player_frame.pack()
-
-        
-        self.label = tk.Label(root, text="Choose a starting number (8-18):")
-        self.label.pack()
-        
-        self.entry = tk.Entry(root, textvariable=self.number)
-        self.entry.pack()
-        
-        self.start_button = tk.Button(root, text="Start Game", command=self.start_game)
-        self.start_button.pack()
+        self.algorithm_choice = TemplateHelper.algorithm_choice_radio_buttons(root) # Algoritma izvēles sākotnējā iestatīšana (var izvēlēties starp Minimax un Alfa-beta)
+        self.starting_player = TemplateHelper.starting_player_radio_buttons(root) # Lietotāja izvēles sākotnējā iestatīšana
+        self.entry, self.start_button = TemplateHelper.starting_number(root, self.number, self.start_game) # Input ar numuru un buttoniem
         
         self.info_label = tk.Label(root, text="")
         self.info_label.pack()
         
-        button_frame = tk.Frame(root)
-        button_frame.pack()
-        self.move_buttons = []
-        for mult in [2, 3, 4]:
-            button = tk.Button(button_frame, text=f"Multiply by {mult}", command=lambda m=mult: self.player_move(m))
-            self.move_buttons.append(button)
-            button.pack(side="left", padx=3, pady=2)
+        self.enable_multiply_buttons, self.disable_multiply_buttons = TemplateHelper.multiply_buttons(root, self.player_move)
         
-        self.restart_button = tk.Button(root, text="Restart", command=self.restart_game)
-        self.restart_button.pack()
+        self.reset_button = tk.Button(root, text="Play again", command=self.reset_game)
+        self.reset_button.pack_forget()
         
-        self.tree_window = None
-        self.ai = AI(self.algorithm_choice.get())
-        self.update_ui()
+        self.reset_game()
 
     def start_game(self):
+        self.ai = AI(self.algorithm_choice.get())
+        self.start_button["state"] = "disabled"
+        self.entry["state"] ="disabled"
         try:
             num = int(self.entry.get())
             if num < 8 or num > 18:
                 raise ValueError
             self.number.set(num)
             self.current_turn = self.starting_player.get()
+
             if self.current_turn == "computer":
+                self.disable_multiply_buttons()
                 self.root.after(1000, self.computer_move)
-            self.update_ui()
+            else:
+                self.enable_multiply_buttons()
+
+            self.update_info_label()
             self.open_tree_window()
         except ValueError:
             messagebox.showerror("Error", "Enter a number between 8 and 18")
@@ -95,20 +54,22 @@ class Game:
         if self.current_turn == "player":
             self.make_move(multiplier, "player")
             self.current_turn = "computer"
+            self.disable_multiply_buttons()
             self.root.after(1000, self.computer_move)
     
     def computer_move(self):
         if self.current_turn == "computer":
-            # TODO: jāfiksē datora vidējo laiku gājiena izpildei
             # Dators izvēlas gājienu atbilstoši algoritmam
             best_move = self.ai.choose_move({
                 "number": self.number.get(),
                 "player_score": self.computer_score,
                 "bank": self.bank
             })
-            self.make_move(best_move, "computer")
+            is_game_finished = self.make_move(best_move, "computer")
+            if (not is_game_finished):
+                self.enable_multiply_buttons()
             self.current_turn = "player"
-            self.update_ui()
+            self.update_info_label()
     
     def make_move(self, multiplier, player):
         new_number = self.number.get() * multiplier
@@ -118,7 +79,7 @@ class Game:
             else:
                 self.computer_score += self.bank
             self.end_game()
-            return
+            return True
         
         if new_number % 2 == 0:
             if player == "player":
@@ -135,13 +96,14 @@ class Game:
             self.bank += 1
         
         self.number.set(new_number)
-        self.update_ui()
+        self.update_info_label()
         self.update_tree()
     
-    def update_ui(self):
+    def update_info_label(self):
         self.info_label.config(text=f"Number: {self.number.get()} | Player: {self.player_score} | Computer: {self.computer_score} | Bank: {self.bank}")
     
     def open_tree_window(self):
+        if self.tree_window is not None: return
         self.tree_window = Toplevel(self.root)
         self.tree_window.title("Game Tree Visualization")
         self.update_tree()
@@ -186,9 +148,10 @@ class Game:
 
         
         pos = nx.multipartite_layout(G, subset_key="subset")
+        labels = {node: node[0] for node in G.nodes()}
 
         fig, ax = plt.subplots(figsize=(8, 8))
-        nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray', node_size=2000, ax=ax)
+        nx.draw(G, pos, labels=labels, with_labels=True, node_color='lightblue', edge_color='gray', node_size=2000, ax=ax)
 
         for widget in self.tree_window.winfo_children():
             widget.destroy()
@@ -198,7 +161,6 @@ class Game:
         canvas.get_tk_widget().pack()
 
     def end_game(self):
-        # TODO: jāfiksē datora un cilvēka uzvaru skaitu
         if self.player_score > self.computer_score:
             winner = "Player wins!"
         elif self.computer_score > self.player_score:
@@ -206,12 +168,25 @@ class Game:
         else:
             winner = "It's a draw!"
         messagebox.showinfo("Game Over", winner)
+        self.entry["state"] = "normal"
+        self.reset_button.pack()
     
-    def restart_game(self):
+    def reset_game(self):
+        self.start_button["state"] = "normal"
+
         self.number.set(8)
         self.player_score = 0
         self.computer_score = 0
         self.bank = 0
         self.current_turn = "player"
-        self.update_ui()
-        self.update_tree()
+
+        self.update_info_label()
+
+        self.reset_button.forget()
+        self.disable_multiply_buttons()
+
+        if self.tree_window is not None:
+            self.tree_window.destroy()
+            self.tree_window.update()
+            self.tree_window = None
+         
