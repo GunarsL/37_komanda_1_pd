@@ -1,3 +1,4 @@
+from helper import simulate_move
 
 def alphabeta(state, depth, alpha, beta, maximizing):
     if state["number"] >= 1200 or depth == 0:
@@ -28,18 +29,3 @@ def alphabeta(state, depth, alpha, beta, maximizing):
             if beta <= alpha:
                 break
         return min_eval, best_move
-
-def simulate_move(state, multiplier):
-    new_number = state["number"] * multiplier
-    new_player_score = state["player_score"]
-    new_bank = state["bank"]
-    
-    if new_number % 2 == 0:
-        new_player_score -= 1
-    else:
-        new_player_score += 1
-    
-    if new_number % 10 == 0 or new_number % 10 == 5:
-        new_bank += 1
-    
-    return {"number": new_number, "player_score": new_player_score, "bank": new_bank}
