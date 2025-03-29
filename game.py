@@ -30,8 +30,6 @@ class Game:
 
     def start_game(self):
         self.ai = AI(self.algorithm_choice.get())
-        self.start_button["state"] = "disabled"
-        self.entry["state"] ="disabled"
         try:
             num = int(self.entry.get())
             if num < 8 or num > 18:
@@ -45,6 +43,8 @@ class Game:
             else:
                 self.enable_multiply_buttons()
 
+            self.start_button["state"] = "disabled"
+            self.entry["state"] ="disabled"
             self.update_info_label()
             self.open_tree_window()
         except ValueError:
