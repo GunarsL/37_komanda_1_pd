@@ -1,6 +1,6 @@
 import random
 from minimax import minimax
-from alphabeta import alphabeta  # Importējiet Alfa-beta algoritmu
+from alphabeta import alphabeta
 
 class AI:
     def __init__(self, algorithm="minimax"):
