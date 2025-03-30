@@ -36,3 +36,7 @@ Soļi darba izpildei:
 8. :x: jāveic komandas dalībnieku savstarpējā vērtēšana;
 9. :x: jāpiesakās aizstāvēšanas laikam;
 10. :x: jāaizstāv izstrādātais darbs.
+
+
+## Atskaite
+[Saite](https://docs.google.com/document/d/1M5kr40_adu8N8CB48oacox_3YZmekQTzFSqUskDWxGM/edit?tab=t.0)

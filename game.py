@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from ai import AI
 from helper import TemplateHelper
+import time
+
 
 class Game:
     def __init__(self, root):
@@ -60,11 +62,14 @@ class Game:
     def computer_move(self):
         if self.current_turn == "computer":
             # Dators izvēlas gājienu atbilstoši algoritmam
+            start = time.time()
             best_move = self.ai.choose_move({
                 "number": self.number.get(),
                 "player_score": self.computer_score,
                 "bank": self.bank
             })
+            end = time.time()
+            print(f"It took {end - start} seconds for ai to choose its move")
             is_game_finished = self.make_move(best_move, "computer")
             if (not is_game_finished):
                 self.enable_multiply_buttons()
@@ -116,7 +121,7 @@ class Game:
         levels = {}
 
         def build_tree(number, depth, level):
-            if depth == 0 or number >= 1200:
+            if depth == 0:
                 return
 
             node_id = (number, level)
@@ -124,15 +129,17 @@ class Game:
                 G.add_node(node_id, subset=level)
                 levels[node_id] = level
 
+            if number >= 1200:
+                return
+
             children = [(number * 2, level + 1), (number * 3, level + 1), (number * 4, level + 1)]
 
             for child, child_level in children:
-                if child < 1200:
-                    child_id = (child, child_level)
-                    G.add_node(child_id, subset=child_level)
-                    levels[child_id] = child_level
-                    G.add_edge(node_id, child_id)
-                    build_tree(child, depth - 1, child_level)
+                child_id = (child, child_level)
+                G.add_node(child_id, subset=child_level)
+                levels[child_id] = child_level
+                G.add_edge(node_id, child_id)
+                build_tree(child, depth - 1, child_level)
 
         root_number = self.number.get()
         levels[(root_number, 0)] = 0

@@ -15,5 +15,6 @@ class AI:
             raise ValueError("Incorrect algorithm argument")
 
     def choose_move(self, state):
-        _, best_move = self.calculate_best_move(state)
+        _, best_move, visited_nodes = self.calculate_best_move(state)
+        print(f"Visited {len(visited_nodes)} nodes")
         return best_move if best_move else random.choice([2, 3, 4])  # Ja nav gājiena, izvēlas nejaušu
