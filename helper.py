@@ -69,7 +69,10 @@ class TemplateHelper:
 
 
 
-
+# Simulē vienu gājienu: reizinot skaitli ar 2, 3 vai 4,
+# aprēķina rezultējošo punktu skaitu un bankas vērtību
+# atbilstoši spēles noteikumiem (paritāte, beigu cipars).
+# ------------------------------------------------------------
 def simulate_move(state, multiplier):
     new_number = state["number"] * multiplier
     new_player_score = state["player_score"]

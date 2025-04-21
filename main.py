@@ -1,3 +1,4 @@
+# Šeit tiek inicializēts tkinter grafiskais logs un palaista spēles klase.
 import tkinter as tk
 from game import Game
 

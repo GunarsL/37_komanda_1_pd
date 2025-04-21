@@ -1,3 +1,9 @@
+# Minimax algoritms ar fiksētu dziļumu.
+# Izvērtē visus iespējamos gājienus līdz noteiktam dziļumam.
+# Maksimizējošais spēlētājs (dators) cenšas iegūt augstāku rezultātu,
+# savukārt minimizējošais (pretinieks) – samazināt to.
+# Atgriež labāko rezultātu un atbilstošo gājienu (2, 3 vai 4).
+# ------------------------------------------------------------
 from helper import simulate_move
 
 def minimax(state, depth, maximizing):

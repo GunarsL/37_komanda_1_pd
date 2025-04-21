@@ -1,19 +1,26 @@
+# Importē nepieciešamos moduļus: GUI, grafu vizualizāciju un AI loģiku
+# ------------------------------------------------------------
 import tkinter as tk
 from tkinter import messagebox, Toplevel
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from ai import AI
-from helper import TemplateHelper
+from helper import TemplateHelper 
 
+# ------------------------------------------------------------
+# Galvenā spēles klase, kas satur GUI logiku, spēles stāvokļa pārvaldību,
+# gājienu izpildi, mākslīgā intelekta integrāciju un spēles koka vizualizāciju.
+# ------------------------------------------------------------
 class Game:
     def __init__(self, root):
+# --- GUI un spēles sākotnējā konfigurācija ---
         self.root = root
         self.root.title("Multiplication Game")
         self.tree_window = None
 
         self.number = tk.IntVar()
-        
+        # Algoritma izvēles interfeiss
         self.algorithm_choice = TemplateHelper.algorithm_choice_radio_buttons(root) # Algoritma izvēles sākotnējā iestatīšana (var izvēlēties starp Minimax un Alfa-beta)
         self.starting_player = TemplateHelper.starting_player_radio_buttons(root) # Lietotāja izvēles sākotnējā iestatīšana
         self.entry, self.start_button = TemplateHelper.starting_number(root, self.number, self.start_game) # Input ar numuru un buttoniem
@@ -27,7 +34,7 @@ class Game:
         self.reset_button.pack_forget()
         
         self.reset_game()
-
+    # Uzsāk spēli – nolasot sākuma skaitli un sākot pareizā spēlētāja gājienu
     def start_game(self):
         self.ai = AI(self.algorithm_choice.get())
         try:
@@ -49,14 +56,14 @@ class Game:
             self.open_tree_window()
         except ValueError:
             messagebox.showerror("Error", "Enter a number between 8 and 18")
-    
+        # Izpilda spēlētāja gājienu, ja ir viņa kārta
     def player_move(self, multiplier):
         if self.current_turn == "player":
             self.make_move(multiplier, "player")
             self.current_turn = "computer"
             self.disable_multiply_buttons()
             self.root.after(1000, self.computer_move)
-    
+    # Dators veic savu gājienu, izmantojot izvēlēto AI algoritmu
     def computer_move(self):
         if self.current_turn == "computer":
             # Dators izvēlas gājienu atbilstoši algoritmam
@@ -70,7 +77,7 @@ class Game:
                 self.enable_multiply_buttons()
             self.current_turn = "player"
             self.update_info_label()
-    
+     # Veic gājienu abiem spēlētājiem – reizināšana, punktu/bankas atjaunošana, spēles beigu pārbaude
     def make_move(self, multiplier, player):
         new_number = self.number.get() * multiplier
         if new_number >= 1200:
@@ -98,16 +105,16 @@ class Game:
         self.number.set(new_number)
         self.update_info_label()
         self.update_tree()
-    
+      # Atjauno spēles informāciju (skaitlis, punkti, banka)
     def update_info_label(self):
         self.info_label.config(text=f"Number: {self.number.get()} | Player: {self.player_score} | Computer: {self.computer_score} | Bank: {self.bank}")
-    
+    # Atver jaunu logu ar spēles koka vizualizāciju
     def open_tree_window(self):
         if self.tree_window is not None: return
         self.tree_window = Toplevel(self.root)
         self.tree_window.title("Game Tree Visualization")
         self.update_tree()
-    
+  # Veido un vizualizē spēles gājienu koku ar 3 līmeņiem  
     def update_tree(self):
         if not self.tree_window:
             return
@@ -159,7 +166,7 @@ class Game:
         canvas = FigureCanvasTkAgg(fig, master=self.tree_window)
         canvas.draw()
         canvas.get_tk_widget().pack()
-
+# Apstrādā spēles beigas – nosaka uzvarētāju un parāda ziņojumu
     def end_game(self):
         if self.player_score > self.computer_score:
             winner = "Player wins!"
@@ -170,7 +177,7 @@ class Game:
         messagebox.showinfo("Game Over", winner)
         self.entry["state"] = "normal"
         self.reset_button.pack()
-    
+    # Restartē spēli – atjauno sākotnējo stāvokli
     def reset_game(self):
         self.start_button["state"] = "normal"
 
