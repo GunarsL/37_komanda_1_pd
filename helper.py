@@ -1,6 +1,13 @@
 import tkinter as tk
-
+# Palīgklase TemplateHelper satur atkārtoti izmantojamus tkinter UI komponentus,
+# kas palīdz veidot radiopogas, ievades laukus un darbību pogas spēles interfeisā.
+# Katra metode atgriež izveidotos komponentus vai saistītās funkcijas.
+# ------------------------------------------------------------
 class TemplateHelper:
+        # --------------------------------------------------------
+    # Izveido radiopogas algoritma izvēlei (Minimax vai AlphaBeta).
+    # Atgriež izvēlēto algoritma vērtību kā tk.StringVar objektu.
+    # --------------------------------------------------------
     @staticmethod
     def algorithm_choice_radio_buttons(root):
         algorithm_frame = tk.Frame(root)
@@ -19,7 +26,11 @@ class TemplateHelper:
         algorithm_frame.pack()
 
         return algorithm_choice
-    
+
+# --------------------------------------------------------
+    # Izveido radiopogas spēlētāja izvēlei – kurš sāk spēli (Player vai Computer).
+    # Atgriež izvēlēto spēlētāju kā tk.StringVar objektu.
+    # --------------------------------------------------------
     @staticmethod
     def starting_player_radio_buttons(root):
         starting_player_frame = tk.Frame(root)
@@ -37,6 +48,11 @@ class TemplateHelper:
         starting_player_frame.pack()
 
         return starting_player
+
+            # --------------------------------------------------------
+    # Izveido sākuma skaitļa ievades lauku un spēles sākšanas pogu.
+    # Atgriež ievades lauka un pogas tkinter objektus.
+    # --------------------------------------------------------
     
     @staticmethod
     def starting_number(root, number, start_game_function):
@@ -50,7 +66,11 @@ class TemplateHelper:
         start_button.pack()
 
         return entry, start_button
-    
+
+    # --------------------------------------------------------
+    # Izveido trīs pogas reizināšanai ar 2, 3 vai 4, kas izsauc player_move funkciju.
+    # Atgriež divas funkcijas: viena, lai pogas aktivizētu, otra – lai deaktivizētu.
+    # --------------------------------------------------------
     @staticmethod
     def multiply_buttons(root, player_move):
         button_frame = tk.Frame(root)
